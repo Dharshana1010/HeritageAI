@@ -751,3 +751,7 @@ function EntityGroup({ icon, label, items }: { icon: React.ReactNode, label: str
     </div>
   );
 }
+function App() {
+  console.log("App started");
+  return <h1>App Working</h1>;
+}
