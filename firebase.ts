@@ -72,3 +72,22 @@ async function testConnection() {
   }
 }
 testConnection();
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyC1Faog8Ef0ifjRGqr1375Y9wxkil15FVU",
+  authDomain: "heritageai-8471b.firebaseapp.com",
+  projectId: "heritageai-8471b",
+  storageBucket: "heritageai-8471b.firebasestorage.app",
+  messagingSenderId: "1031429977460",
+  appId: "1:1031429977460:web:fd5eb25a59fa2b9a6a6821",
+  measurementId: "G-NBFLK7M01P"
+};
+
