@@ -1,0 +1,5 @@
+{
+  "name": "HeritageAI",
+  "description": "Ancient Text Digitalization System for manuscripts, inscriptions, and historical records.",
+  "requestFramePermissions": ["camera"]
+}

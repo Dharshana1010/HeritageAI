@@ -1,0 +1,54 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Manuscript": {
+      "title": "Manuscript",
+      "description": "Digitized manuscript record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "title": { "type": "string" },
+        "period": { "type": "string" },
+        "rawText": { "type": "string" },
+        "summary": { "type": "string" },
+        "translatedText": { "type": "string" },
+        "historicalInsight": { "type": "string" },
+        "entities": {
+          "type": "object",
+          "properties": {
+            "kings": { "type": "array", "items": { "type": "string" } },
+            "places": { "type": "array", "items": { "type": "string" } },
+            "temples": { "type": "array", "items": { "type": "string" } },
+            "events": { "type": "array", "items": { "type": "string" } },
+            "dynasties": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "uploadDate": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "imageUrl", "title", "period", "rawText", "summary"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "manuscripts/{manuscriptId}": {
+      "schema": "Manuscript",
+      "description": "Manuscript records"
+    }
+  }
+}

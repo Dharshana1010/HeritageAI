@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - displayName: string
+    //   - createdAt: timestamp
+    //
+    // Collection: manuscripts
+    // Document ID: {manuscriptId}
+    // Fields:
+    //   - userId: string (required)
+    //   - imageUrl: string (required)
+    //   - title: string
+    //   - period: string
+    //   - rawText: string (required)
+    //   - summary: string
+    //   - translatedText: string
+    //   - historicalInsight: string
+    //   - entities: map
+    //   - uploadDate: timestamp
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "dharshanajayachandran2020@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid is string &&
+             data.email is string &&
+             (!('role' in data) || data.role in ['admin', 'user']);
+    }
+
+    function isValidManuscript(data) {
+      return data.keys().hasAll(['userId', 'imageUrl', 'title', 'period', 'rawText', 'summary']) &&
+             data.userId is string &&
+             data.imageUrl is string &&
+             data.title is string &&
+             data.period is string &&
+             data.rawText is string &&
+             data.summary is string &&
+             data.imageUrl.size() < 1048576 && // Limit base64 size (1MB)
+             (!('entities' in data) || data.entities is map);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && (!('role' in request.resource.data) || request.resource.data.role == 'user');
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == resource.data.role) || isAdmin();
+    }
+
+    match /manuscripts/{manuscriptId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidManuscript(request.resource.data);
+      allow update: if isDocOwner() && isValidManuscript(request.resource.data) || isAdmin();
+      allow delete: if isDocOwner() || isAdmin();
+    }
+    
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
